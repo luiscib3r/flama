@@ -1,0 +1,5 @@
+name: flama
+repository: https://github.com/luiscib3r/flama
+
+packages:
+  - packages/*

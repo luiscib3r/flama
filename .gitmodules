@@ -1,0 +1,3 @@
+[submodule "packages/flama_bindings/llama.cpp"]
+	path = packages/flama_bindings/llama.cpp
+	url = https://github.com/luiscib3r/llama.cpp.git

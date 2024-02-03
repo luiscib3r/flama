@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "packages/flama_bindings"
+		},
+		{
+			"path": "packages/flama_bindings/llama.cpp"
+		}
+	],
+	"settings": {}
+}
