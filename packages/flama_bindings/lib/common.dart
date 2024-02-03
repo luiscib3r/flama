@@ -46,16 +46,21 @@ extension CommonExtension on FlamaBindings {
 
   /// Get string representation of the token.
   String llamaTokenToPiece(Pointer<llama_context> ctx, int token) {
-    final tokens = malloc.allocate<Char>(8);
-
-    final model = llama_get_model(ctx);
-    final nTokens = llama_token_to_piece(model, token, tokens, 8);
-
-    if (nTokens < 0) {
-      return '';
+    final buffer = malloc.allocate<Char>(8);
+    for (var i = 0; i < 8; ++i) {
+      buffer[i] = 0;
     }
 
-    return tokens.cast<Utf8>().toDartString();
+    final model = llama_get_model(ctx);
+    llama_token_to_piece(model, token, buffer, 8);
+
+    try {
+      return buffer.cast<Utf8>().toDartString();
+    } on FormatException {
+      return '';
+    } finally {
+      malloc.free(buffer);
+    }
   }
 
   /// Add a token to the batch.
