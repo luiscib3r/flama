@@ -9,6 +9,7 @@ environment:
   sdk: ^3.2.6
 
 dependencies:
+  ffi: ^2.1.0
   flama_bindings:
 
 dev_dependencies:
