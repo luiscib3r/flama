@@ -4,6 +4,9 @@
 			"path": "."
 		},
 		{
+			"path": "packages/flama",
+		},
+		{
 			"path": "packages/flama_bindings"
 		},
 		{
