@@ -44,11 +44,12 @@ extension CommonExtension on FlamaBindings {
 
   String llamaTokenToPiece(Pointer<llama_context> ctx, int token) {
     final tokens = malloc.allocate<Char>(8);
+
     final model = llama_get_model(ctx);
     final nTokens = llama_token_to_piece(model, token, tokens, 8);
 
     if (nTokens < 0) {
-      return ' <err>';
+      return '';
     }
 
     return tokens.cast<Utf8>().toDartString();

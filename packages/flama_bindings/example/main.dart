@@ -22,7 +22,7 @@ void main() {
 
   // Params
   final modelPath = 'orca-mini-3b-q4_0.gguf';
-  final prompt = 'Tips to build large scale systems';
+  final prompt = 'How to build a mobile app?';
   final params = flamaBindings.llama_model_default_params();
   params.n_gpu_layers = nGpuLayers;
 
@@ -48,7 +48,7 @@ void main() {
 
   // Initialize context
   final contextParams = flamaBindings.llama_context_default_params();
-  // contextParams.seed = 1234;
+  contextParams.seed = 1234;
   contextParams.n_ctx = nKvReq;
   contextParams.n_batch = math.max(nLen, nParallel);
 
