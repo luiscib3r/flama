@@ -3,7 +3,9 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:flama_bindings/bindings/flama_bindings.dart';
 
+/// Common extension for the [FlamaBindings] class.
 extension CommonExtension on FlamaBindings {
+  /// Tokenize the given [text].
   (Pointer<llama_token>, int) llamaTokenize({
     required Pointer<llama_model> model,
     required String text,
@@ -42,6 +44,7 @@ extension CommonExtension on FlamaBindings {
     return (result, nTokens);
   }
 
+  /// Get string representation of the token.
   String llamaTokenToPiece(Pointer<llama_context> ctx, int token) {
     final tokens = malloc.allocate<Char>(8);
 
@@ -55,6 +58,7 @@ extension CommonExtension on FlamaBindings {
     return tokens.cast<Utf8>().toDartString();
   }
 
+  /// Add a token to the batch.
   llama_batch llamaBatchAdd({
     required llama_batch batch,
     required int token,

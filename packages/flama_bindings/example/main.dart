@@ -12,19 +12,19 @@ void main() {
   );
 
   // Number of parallel batches
-  final nParallel = 1;
+  const nParallel = 1;
 
   // Total length of the sequence including the prompt
-  final nLen = 1024;
+  const nLen = 1024;
 
   // number of layers to offload to the GPU
-  final nGpuLayers = 999;
+  const nGpuLayers = 999;
 
   // Params
-  final modelPath = 'orca-mini-3b-q4_0.gguf';
-  final prompt = 'How to build a mobile app?';
-  final params = flamaBindings.llama_model_default_params();
-  params.n_gpu_layers = nGpuLayers;
+  const modelPath = 'orca-mini-3b-q4_0.gguf';
+  const prompt = 'How to build a mobile app?';
+  final params = flamaBindings.llama_model_default_params()
+    ..n_gpu_layers = nGpuLayers;
 
   // Init backend
   flamaBindings.llama_backend_init(true);
@@ -47,10 +47,10 @@ void main() {
   final nKvReq = nTokens + (nLen - nTokens) * nParallel;
 
   // Initialize context
-  final contextParams = flamaBindings.llama_context_default_params();
-  contextParams.seed = 1234;
-  contextParams.n_ctx = nKvReq;
-  contextParams.n_batch = math.max(nLen, nParallel);
+  final contextParams = flamaBindings.llama_context_default_params()
+    ..seed = 1234
+    ..n_ctx = nKvReq
+    ..n_batch = math.max(nLen, nParallel);
 
   final ctx = flamaBindings.llama_new_context_with_model(
     model,
@@ -61,7 +61,7 @@ void main() {
 
   if (nKvReq > nCtx) {
     throw Exception(
-      'error: nKvReq (%d) > nCtx, the required KV cache size is not big enough'
+      'error: nKvReq (%d) > nCtx, the required KV cache size is not big enough '
       'either reduce nParallel or increase nCtx',
     );
   }
@@ -73,8 +73,8 @@ void main() {
     final piece = flamaBindings.llamaTokenToPiece(ctx, token);
     pices.add(piece);
   }
-  stdout.write('Prompt: ');
-  stdout.write(pices.join('').trim());
+
+  stdout.writeln(pices.join().trim());
 
   // Create a batch
   // We use this object to submit token data for decoding
@@ -92,7 +92,6 @@ void main() {
       logits: false,
     );
   }
-  assert(batch.n_tokens == nTokens);
 
   // llama_decode will output logits only for the last token of the prompt
   batch.logits[batch.n_tokens - 1] = 1;
@@ -113,7 +112,7 @@ void main() {
 
   // Main loop
   // We will store the parallel decoded sequences in this vector
-  List<String> streams = List.filled(nParallel, '');
+  final streams = List<String>.filled(nParallel, '');
 
   // Remember the batch index of the last token for each parallel sequence
   // we need this to determine which logits to sample from
@@ -149,26 +148,29 @@ void main() {
 
       final candidatePPtr = malloc
           .allocate<llama_token_data_array>(sizeOf<llama_token_data_array>());
-      final candidateP = candidatePPtr[0];
-      candidateP.data = candidates;
-      candidateP.size = nVocab;
-      candidateP.sorted = false;
+      candidatePPtr[0]
+        ..data = candidates
+        ..size = nVocab
+        ..sorted = false;
 
       const topK = 40;
       const topP = 0.9;
       const temp = 0.85;
 
-      flamaBindings.llama_sample_top_k(ctx, candidatePPtr, topK, 1);
-      flamaBindings.llama_sample_top_p(ctx, candidatePPtr, topP, 1);
-      flamaBindings.llama_sample_temp(ctx, candidatePPtr, temp);
+      flamaBindings
+        ..llama_sample_top_k(ctx, candidatePPtr, topK, 1)
+        ..llama_sample_top_p(ctx, candidatePPtr, topP, 1)
+        ..llama_sample_temp(ctx, candidatePPtr, temp);
 
       final newTokenId = flamaBindings.llama_sample_token(ctx, candidatePPtr);
 
       // is it an end of stream? -> mark the stream as finished
       if (newTokenId == eosToken || nCur == nLen) {
         iBatch[i] = -1;
-        malloc.free(candidates);
-        malloc.free(candidatePPtr);
+        malloc
+          ..free(candidates)
+          ..free(candidatePPtr);
+
         continue;
       }
 
@@ -191,8 +193,9 @@ void main() {
         logits: true,
       );
 
-      malloc.free(candidates);
-      malloc.free(candidatePPtr);
+      malloc
+        ..free(candidates)
+        ..free(candidatePPtr);
     }
 
     // all streams are finished
@@ -213,10 +216,14 @@ void main() {
   }
 
   stdout.writeln('\n');
-  malloc.free(tokenList);
-  malloc.free(iBatch);
-  flamaBindings.llama_batch_free(batch);
-  flamaBindings.llama_free(ctx);
-  flamaBindings.llama_free_model(model);
-  flamaBindings.llama_backend_free();
+
+  malloc
+    ..free(tokenList)
+    ..free(iBatch);
+
+  flamaBindings
+    ..llama_batch_free(batch)
+    ..llama_free(ctx)
+    ..llama_free_model(model)
+    ..llama_backend_free();
 }
