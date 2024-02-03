@@ -61,7 +61,7 @@ void main() {
 
   if (nKvReq > nCtx) {
     throw Exception(
-      'error: nKvReq (%d) > nCtx, the required KV cache size is not big enough '
+      'error: nKvReq > nCtx, the required KV cache size is not big enough '
       'either reduce nParallel or increase nCtx',
     );
   }
