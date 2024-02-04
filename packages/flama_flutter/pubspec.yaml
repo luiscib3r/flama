@@ -1,0 +1,25 @@
+name: flama_flutter
+description:
+  flama_flutter is a Flutter package designed to streamline interactions with\
+  Large Language Models (LLMs). Facilitating seamless integration and usage within Flutter projects.
+version: 0.0.1
+repository: https://github.com/luiscib3r/flama
+
+environment:
+  sdk: '>=3.2.6 <4.0.0'
+  flutter: '>=1.17.0'
+
+dependencies:
+  flama:
+  flama_flutter_libs:
+  flutter:
+    sdk: flutter
+  path: ^1.8.3
+  path_provider: ^2.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^5.1.0
+
+flutter:
