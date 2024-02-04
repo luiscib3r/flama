@@ -7,8 +7,7 @@ Future<void> main(List<String> args) async {
   // Example:
   // huggingface-cli download stabilityai/stablelm-2-zephyr-1_6b stablelm-2-zephyr-1_6b-Q4_0.gguf --local-dir .
   final llama = await LlamaLocal.create(
-    libraryPath: 'libllama.dylib',
-    modelPath: 'stablelm-2-zephyr-1_6b-Q4_0.gguf',
+    const LlamaLocalParams(model: 'stablelm-2-zephyr-1_6b-Q4_0.gguf'),
   );
 
   const prompt = 'How to build a ML systems?';
@@ -19,6 +18,6 @@ Future<void> main(List<String> args) async {
     stdout.write(token);
   }
   stdout.writeln();
-  await stdout.flush(); 
+  await stdout.flush();
   await llama.dispose();
 }

@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:ffi';
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:ffi/ffi.dart';
 import 'package:flama/flama.dart';
+import 'package:flama/src/extensions/extensions.dart';
 import 'package:flama_bindings/flama_bindings.dart';
 
 /// {@template llama_local}
@@ -14,72 +16,42 @@ class LlamaLocal extends LLMBase {
   LlamaLocal._(
     this._bindings,
     this._model,
-    this._ctx,
-    this._eosToken, {
-    required super.seed,
-    required super.model,
-    required super.temperature,
-    required super.maxTokens,
-    required super.topK,
-    required super.topP,
-  });
+    this._eosToken,
+    this._params,
+    this._addBos,
+  );
+
+  final LlamaLocalParams _params;
 
   /// Create a new instance of [LlamaLocal] model.
-  static Future<LlamaLocal> create({
-    required String libraryPath,
-    required String modelPath,
-    int seed = 0,
-    double temperature = 0.85,
-    int maxTokens = 1024,
-    int topK = 40,
-    double topP = 0.9,
-    int nGpuLayers = 999,
-  }) async {
-    final bindings = FlamaBindings(
-      DynamicLibrary.open(libraryPath),
-    );
+  static Future<LlamaLocal> create(LlamaLocalParams params) async {
+    final library =
+        params.library ?? (Platform.isIOS ? null : Abi.current().library);
+    final dylib = Platform.isIOS
+        ? DynamicLibrary.process()
+        : DynamicLibrary.open(library!);
 
-    final params = bindings.llama_model_default_params()
-      ..n_gpu_layers = nGpuLayers;
+    final bindings = FlamaBindings(dylib);
+
+    final modelParams = bindings.llama_model_default_params()
+      ..n_gpu_layers = params.nGpuLayers;
 
     bindings.llama_backend_init(true);
 
     final model = bindings.llama_load_model_from_file(
-      modelPath.toNativeUtf8().cast<Char>(),
-      params,
+      params.model.toNativeUtf8().cast<Char>(),
+      modelParams,
     );
-
-    final ctxParams = bindings.llama_context_default_params()
-      ..seed = seed == 0 ? math.Random().nextInt(1000) : seed
-      ..n_ctx = maxTokens
-      ..n_batch = maxTokens;
-
-    final ctx = bindings.llama_new_context_with_model(
-      model,
-      ctxParams,
-    );
-
-    final nCtx = bindings.llama_n_ctx(ctx);
-
-    if (maxTokens > nCtx) {
-      throw Exception(
-        'error: nKvReq > nCtx, the required KV cache size is not big enough',
-      );
-    }
 
     final eosToken = bindings.llama_token_eos(model);
+    final addBos = bindings.llama_add_bos_token(model);
 
     return LlamaLocal._(
       bindings,
       model,
-      ctx,
       eosToken,
-      seed: seed == 0 ? math.Random().nextInt(1000) : seed,
-      model: modelPath,
-      temperature: temperature,
-      maxTokens: maxTokens,
-      topK: topK,
-      topP: topP,
+      params,
+      addBos,
     );
   }
 
@@ -89,15 +61,15 @@ class LlamaLocal extends LLMBase {
   // Model
   final Pointer<llama_model> _model;
 
-  // Context
-  final Pointer<llama_context> _ctx;
-
   // End of sequence token
   final int _eosToken;
+
+  final int _addBos;
 
   //--------------------------------------------
   // Inference artifacts
   //--------------------------------------------
+  Pointer<llama_context>? _ctx;
   llama_batch? _batch;
   //--------------------------------------------
 
@@ -120,6 +92,10 @@ class LlamaLocal extends LLMBase {
 
   // Initialize
   void _init(String input) {
+    if (_ctx != null) {
+      _bindings.llama_free(_ctx!);
+    }
+
     if (_batch != null) {
       _bindings.llama_batch_free(_batch!);
     }
@@ -127,7 +103,17 @@ class LlamaLocal extends LLMBase {
     final (tokens, nTokens) = _bindings.llamaTokenize(
       model: _model,
       text: input,
-      addBos: true,
+      addBos: _addBos == 1,
+    );
+
+    final contextParams = _bindings.llama_context_default_params()
+      ..seed = _params.seed == 0 ? math.Random().nextInt(9999) : _params.seed
+      ..n_ctx = _params.maxTokens
+      ..n_batch = _params.maxTokens;
+
+    _ctx = _bindings.llama_new_context_with_model(
+      _model,
+      contextParams,
     );
 
     _batch = _bindings.llama_batch_init(math.max(nTokens, 1), 0, 1);
@@ -147,7 +133,7 @@ class LlamaLocal extends LLMBase {
     _batch!.logits[_batch!.n_tokens - 1] = 1;
 
     // Initial evaluation
-    final result = _bindings.llama_decode(_ctx, _batch!);
+    final result = _bindings.llama_decode(_ctx!, _batch!);
 
     if (result != 0) {
       throw Exception('error: llama_decode failed');
@@ -156,12 +142,13 @@ class LlamaLocal extends LLMBase {
 
   // Run inference
   Stream<String> _run() async* {
+    assert(_ctx != null, 'Context is not initialized');
     assert(_batch != null, 'Batch is not initialized');
 
     var nCur = _batch!.n_tokens;
     var nTokens = _batch!.n_tokens - 1;
 
-    while (nCur <= maxTokens) {
+    while (nCur <= _params.maxTokens) {
       // Prepare the next batch
       _batch!.n_tokens = 0;
 
@@ -173,7 +160,7 @@ class LlamaLocal extends LLMBase {
       }
 
       final nVocab = _bindings.llama_n_vocab(_model);
-      final logits = _bindings.llama_get_logits_ith(_ctx, nTokens);
+      final logits = _bindings.llama_get_logits_ith(_ctx!, nTokens);
 
       final candidates = malloc
           .allocate<llama_token_data>(nVocab * sizeOf<llama_token_data>());
@@ -192,14 +179,14 @@ class LlamaLocal extends LLMBase {
         ..sorted = false;
 
       _bindings
-        ..llama_sample_top_k(_ctx, candidatePPtr, topK, 1)
-        ..llama_sample_top_p(_ctx, candidatePPtr, topP, 1)
-        ..llama_sample_temp(_ctx, candidatePPtr, temperature);
+        ..llama_sample_top_k(_ctx!, candidatePPtr, _params.topK, 1)
+        ..llama_sample_top_p(_ctx!, candidatePPtr, _params.topP, 1)
+        ..llama_sample_temp(_ctx!, candidatePPtr, _params.temperature);
 
-      final newTokenId = _bindings.llama_sample_token(_ctx, candidatePPtr);
+      final newTokenId = _bindings.llama_sample_token(_ctx!, candidatePPtr);
 
       // is it an end of stream? -> mark the stream as finished
-      if (newTokenId == _eosToken || nCur == maxTokens) {
+      if (newTokenId == _eosToken || nCur == _params.maxTokens) {
         nTokens = -1;
         malloc
           ..free(candidates)
@@ -209,7 +196,7 @@ class LlamaLocal extends LLMBase {
       }
 
       // if there is only one stream, we print immediately to stdout
-      final token = _bindings.llamaTokenToPiece(_ctx, newTokenId);
+      final token = _bindings.llamaTokenToPiece(_ctx!, newTokenId);
 
       yield token;
 
@@ -236,20 +223,30 @@ class LlamaLocal extends LLMBase {
       nCur += 1;
 
       // evaluate the current batch with the transformer model
-      _bindings.llama_decode(_ctx, _batch!);
+      _bindings.llama_decode(_ctx!, _batch!);
     }
 
-    _bindings.llama_batch_free(_batch!);
+    _bindings
+      ..llama_batch_free(_batch!)
+      ..llama_free(_ctx!);
 
     _batch = null;
+    _ctx = null;
 
     return;
   }
 
   @override
   Future<void> dispose() async {
+    if (_batch != null) {
+      _bindings.llama_batch_free(_batch!);
+    }
+
+    if (_ctx != null) {
+      _bindings.llama_free(_ctx!);
+    }
+
     _bindings
-      ..llama_free(_ctx)
       ..llama_free_model(_model)
       ..llama_backend_free();
   }
