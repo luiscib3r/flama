@@ -1,3 +1,6 @@
 [submodule "packages/flama_bindings/llama.cpp"]
 	path = packages/flama_bindings/llama.cpp
 	url = https://github.com/luiscib3r/llama.cpp.git
+[submodule "packages/flama_flutter_libs/llama.cpp"]
+	path = packages/flama_flutter_libs/llama.cpp
+	url = https://github.com/luiscib3r/llama.cpp.git
