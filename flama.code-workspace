@@ -7,10 +7,16 @@
 			"path": "packages/flama",
 		},
 		{
+			"path": "packages/flama_flutter",
+		},
+		{
 			"path": "packages/flama_bindings"
 		},
 		{
-			"path": "packages/flama_bindings/llama.cpp"
+			"path": "packages/flama_flutter_libs"
+		},
+		{
+			"path": "apps/flama_example"
 		}
 	],
 	"settings": {}

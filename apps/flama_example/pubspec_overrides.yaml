@@ -1,0 +1,10 @@
+# melos_managed_dependency_overrides: flama,flama_bindings,flama_flutter_libs,flama_flutter
+dependency_overrides:
+  flama:
+    path: ../../packages/flama
+  flama_bindings:
+    path: ../../packages/flama_bindings
+  flama_flutter:
+    path: ../../packages/flama_flutter
+  flama_flutter_libs:
+    path: ../../packages/flama_flutter_libs

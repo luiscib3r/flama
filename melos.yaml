@@ -2,4 +2,10 @@ name: flama
 repository: https://github.com/luiscib3r/flama
 
 packages:
+  - apps/*
   - packages/*
+
+scripts:
+  format:
+    description: Format Dart files
+    run: melos exec -- "dart format --fix ."

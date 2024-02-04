@@ -1,1 +1,9 @@
 include: package:very_good_analysis/analysis_options.yaml
+
+linter:
+  rules:
+    no_runtimeType_toString: false
+
+analyzer:
+  exclude:
+    - '**/*.g.dart'
