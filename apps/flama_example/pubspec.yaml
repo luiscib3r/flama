@@ -10,8 +10,8 @@ environment:
 
 dependencies:
   cupertino_icons: ^1.0.2
-  flama_flutter:
-  flama_flutter_libs:
+  flama_flutter: ^0.0.1
+  flama_flutter_libs: ^0.0.1
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.3
