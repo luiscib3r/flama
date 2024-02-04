@@ -30,3 +30,7 @@ build/
 
 *.dylib
 *.metal
+*.xcframework/
+
+ios-device/
+ios-simulator/
