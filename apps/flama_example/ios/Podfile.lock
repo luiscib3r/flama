@@ -1,0 +1,29 @@
+PODS:
+  - flama_flutter_libs (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+
+DEPENDENCIES:
+  - flama_flutter_libs (from `.symlinks/plugins/flama_flutter_libs/ios`)
+  - Flutter (from `Flutter`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+
+EXTERNAL SOURCES:
+  flama_flutter_libs:
+    :path: ".symlinks/plugins/flama_flutter_libs/ios"
+  Flutter:
+    :path: Flutter
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/darwin"
+
+SPEC CHECKSUMS:
+  flama_flutter_libs: f9c7397709dd8f8b526f8dcd38c7f1803f829b5c
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  path_provider_foundation: 3784922295ac71e43754bd15e0653ccfd36a147c
+
+PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
+
+COCOAPODS: 1.14.3

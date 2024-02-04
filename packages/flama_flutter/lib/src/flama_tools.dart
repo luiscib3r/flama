@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
@@ -30,7 +31,7 @@ abstract class FlamaTools {
       // Copy file from assets
       final data = await rootBundle.load(assetPath);
       final bytes = data.buffer.asUint8List();
-      await file.writeAsBytes(bytes);
+      await compute(file.writeAsBytes, bytes);
     }
 
     return filePath;
