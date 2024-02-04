@@ -8,6 +8,8 @@ extension AbiX on Abi {
       case Abi.macosArm64:
       case Abi.macosX64:
         return 'libllama.dylib';
+      case Abi.androidArm64:
+        return 'libllama.so';
       default:
         throw UnsupportedError('Unsupported platform ${Abi.current()}');
     }

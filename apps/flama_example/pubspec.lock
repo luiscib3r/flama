@@ -103,7 +103,7 @@ packages:
     source: path
     version: "0.0.1"
   flama_flutter_libs:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       path: "../../packages/flama_flutter_libs"
       relative: true
