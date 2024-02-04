@@ -2348,7 +2348,7 @@ final class llama_context_params extends ffi.Struct {
   external int n_threads_batch;
 
   /// RoPE scaling type, from `enum llama_rope_scaling_type`
-  @ffi.Int8()
+  @ffi.Int32()
   external int rope_scaling_type;
 
   /// RoPE base frequency, 0 = from model
