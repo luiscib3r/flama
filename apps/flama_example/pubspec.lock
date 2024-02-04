@@ -87,28 +87,28 @@ packages:
       path: "../../packages/flama"
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.0.2"
   flama_bindings:
     dependency: "direct overridden"
     description:
       path: "../../packages/flama_bindings"
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.0.1+1"
   flama_flutter:
     dependency: "direct main"
     description:
       path: "../../packages/flama_flutter"
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.0.2"
   flama_flutter_libs:
     dependency: "direct main"
     description:
       path: "../../packages/flama_flutter_libs"
       relative: true
     source: path
-    version: "0.0.1"
+    version: "0.0.2"
   flutter:
     dependency: "direct main"
     description: flutter

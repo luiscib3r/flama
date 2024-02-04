@@ -4,4 +4,4 @@
 !*.dll
 !*.xcframework/
 !jniLibs/
-llama.cpp/
+llama.cpp/*
