@@ -1,6 +1,5 @@
 name: flama
-description: Flama is a Dart package designed to streamline interactions with\
-  Large Language Models (LLMs). Facilitating seamless integration and usage within Dart projects.
+description: Flama is a Dart package designed to streamline interactions with Large Language Models (LLMs).
 version: 0.0.1
 repository: https://github.com/luiscib3r/flama
 
