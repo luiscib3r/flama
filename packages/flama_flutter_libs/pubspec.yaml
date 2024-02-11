@@ -1,6 +1,6 @@
 name: flama_flutter_libs
 description: 'llama.cpp libraries for flama_bindings packages'
-version: 0.0.2
+version: 0.0.2+1
 repository: https://github.com/luiscib3r/flama
 
 environment:
@@ -10,19 +10,18 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flama: ^0.0.2
+  flama: ^0.0.2+1
 
 flutter:
   plugin:
     platforms:
       android:
-        package: com.luisciber.flama_flutter_libs
-        pluginClass: FlamaFlutterLibsPlugin
+        ffiPlugin: true
       ios:
-        pluginClass: FlamaFlutterLibsPlugin
+        ffiPlugin: true
       linux:
-        pluginClass: FlamaFlutterLibsPlugin
+        ffiPlugin: true
       macos:
-        pluginClass: FlamaFlutterLibsPlugin
+        ffiPlugin: true
       windows:
-        pluginClass: FlamaFlutterLibsPluginCApi
+        ffiPlugin: true
