@@ -1,6 +1,6 @@
 name: flama_bindings
 description: llama.cpp bindings for flama package.
-version: 0.0.1+1
+version: 0.0.1+2
 repository: https://github.com/luiscib3r/flama
 
 environment:
