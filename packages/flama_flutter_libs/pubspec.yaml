@@ -16,13 +16,12 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.luisciber.flama_flutter_libs
-        pluginClass: FlamaFlutterLibsPlugin
+        ffiPlugin: true
       ios:
-        pluginClass: FlamaFlutterLibsPlugin
+        ffiPlugin: true
       linux:
-        pluginClass: FlamaFlutterLibsPlugin
+        ffiPlugin: true
       macos:
-        pluginClass: FlamaFlutterLibsPlugin
+        ffiPlugin: true
       windows:
-        pluginClass: FlamaFlutterLibsPluginCApi
+        ffiPlugin: true

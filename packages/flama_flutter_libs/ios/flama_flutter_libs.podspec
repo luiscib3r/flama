@@ -12,12 +12,17 @@ Pod::Spec.new do |s|
   s.author           = { 'Luis Ciber' => 'luisciber640@gmail.com' }
 
   s.source           = { :path => '.' }
+  s.public_header_files = 'Classes/**/*.h'
   s.source_files = 'Classes/**/*'
+
+  s.resource_bundles = {
+    'flama_flutter_libs' => ['Assets/ggml-metal.metal']
+  }
   
   s.dependency 'Flutter'
   s.platform = :ios, '11.0'
   s.swift_version = '5.0'
   s.static_framework = true
-  s.xcconfig = { 'OTHER_LDFLAGS' => '-framework Accelerate' }
+  s.xcconfig = { 'OTHER_LDFLAGS' => '-framework Accelerate -framework Metal' }
   s.vendored_frameworks = 'llama.xcframework'
 end
