@@ -50,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _runModel() async {
     final modelPath = await FlamaTools.modelFromAsset(
-      'model/stablelm-2-zephyr-1_6b-Q4_0.gguf',
+      'model/stablelm-2-zephyr-1_6b-Q4_1.gguf',
     );
 
     await bloc.run(LlamaLocalParams(model: modelPath));
