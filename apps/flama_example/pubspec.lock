@@ -94,7 +94,7 @@ packages:
       path: "../../packages/flama_bindings"
       relative: true
     source: path
-    version: "0.0.1+3"
+    version: "0.0.2+3"
   flama_flutter:
     dependency: "direct main"
     description:
